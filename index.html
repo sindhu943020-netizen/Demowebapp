@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedShield AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-blue-600 p-4 text-white shadow-lg">
+        <h1 class="text-xl font-bold">MedShield AI Scanner</h1>
+    </nav>
+
+    <div class="p-6 max-w-md mx-auto">
+        <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+            <img src="logo.png" alt="App Logo" class="w-20 h-20 mx-auto mb-4 rounded-xl">
+            <h2 class="text-2xl font-bold text-gray-800">Welcome to MedShield</h2>
+            <p class="text-gray-500 mt-2">Track inventory and expiry with AI.</p>
+            
+            <button id="installBtn" class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition hidden">
+                Download & Install App
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Service Worker Register (Zaroori for PWA)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+            .then(() => console.log("Service Worker Active"));
+        }
+
+        // 2. Install Button Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.classList.remove('hidden'); // Button tabhi dikhega jab browser install allow karega
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+    </script>
+</body>
+</html>
